@@ -1,8 +1,7 @@
 var async                      = require("async");
 var url                        = require("url");
 var logger                     = require("node-wrapper/logger");
-var http                       = require("http");
-var https                      = require("https");
+var request                    = require("request");
 
 var Segment                    = require("./Segment.js")
 
@@ -45,13 +44,13 @@ var Profile = function (data) {
 
   this.init = function(callback){
     debug = logger.create("profile " + self.channel.label + "#" + self.id);
-    /**/debug._debug("init");/**/
+    /*/debug._debug("init");/**/
 
     if (callback) return callback();
   };
 
   this.start = function (data, callback) {
-    /**/debug._debug("start", url.parse(self.url));/**/
+    /*/debug._debug("start");/**/
     return self.update(null, function (err, results) {
       if (err) return callback(err);
 
@@ -61,24 +60,16 @@ var Profile = function (data) {
 
   this.update = function (data, callback) {
     var fetchM3u8 = function (callback) {
-      if ('user_agent' in self.config) self.url.headers = { 'User-Agent': self.config.user_agent };
+      var options = {url: self.url.format()};
+      if (self.config.headers) options.headers = self.config.headers;
 
-      return (self.url.protocol == 'https:' ? https : http).get(self.url, function (response) {
-        var raws = "";
-        response.setEncoding('utf8');
-
-        response.on('data', function (raw) {
-          raws += raw.toString();
-        });
-        response.on('end', function () {
-          var lines = raws.split(/\r?\n/);
-
-          lines_saved = lines
-          return callback(null, {lines: lines});
-        });
-      }).on("error", function (err) {
-        debug._error("Profile :", err);
-        return callback(null, {lines: lines_saved});
+      return request(options, function (error, response, body) {
+        if (error) return callback(err);
+        
+        var lines = body.split(/\r?\n/);
+        
+        lines_saved = lines
+        return callback(null, {lines: lines});
       });
     };
 

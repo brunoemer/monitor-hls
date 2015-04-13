@@ -1,6 +1,5 @@
 var async           = require("async");
-var http            = require("http");
-var https           = require("https");
+var request         = require("request");
 var logger          = require("node-wrapper/logger");
 var util            = require("util");
 var url_module      = require("url");
@@ -18,11 +17,12 @@ var MainProfile = function (data) {
   this.profiles            = []; /* All (Profile) profiles to this channel */
   this.channels            = data.channels; /* All (MainProfile) channels */
 
-  var last_profile_id     = 0;
-  var timeout             = null;
+  var last_profile_id      = 0;
+  var timeout              = null;
 
   /* Const */
-  const regex_header = /^#EXT-X-STREAM-INF\s*:\s*PROGRAM-ID\s*=\s*[1-9]+\s*,\s*BANDWIDTH\s*=\s*(.*),*.*$/;
+  const regex_header       = /^#EXT-X-STREAM-INF\s*:\s*PROGRAM-ID\s*=\s*[1-9]+\s*,\s*BANDWIDTH\s*=\s*(.*),*.*$/;
+  const regex_segment     = /^#EXTINF:(.*)$/;
 
   this.init = function(callback){
     self.debug     = logger.create("live " + self.label);
@@ -41,35 +41,38 @@ var MainProfile = function (data) {
 
   this.update = function (data, callback) {
     var fetchM3u8 = function (callback) {
-      var opt = url_module.parse(self.url);
-      if ('user_agent' in self.config) opt.headers = { 'User-Agent': self.config.user_agent };
+      var options = {url: self.url};
+      if (self.config.headers) options.headers = self.config.headers;
 
-      return (opt.protocol == 'https:' ? https : http).get(opt, function (response) {
-        var raws = "";
-        response.setEncoding('utf8');
+      return request(options, function (error, response, body) {
+        if (error) return callback(err);
 
-        response.on('data', function (raw) {
-          raws += raw.toString();
-        });
-        response.on('end', function () {
-          var lines = raws.split(/\r?\n/);
-          
-          return callback(null, {lines: lines});
-        });
-      }).on("error", function (err) {
-        return callback(err);
+        var lines = body.split(/\r?\n/);         
+        return callback(null, {lines: lines});
       });
     };
 
     var updateMainProfile = function (data, callback) {
+      /**/self.debug._debug("lines", data.lines);/**/
       var lines = data.lines;
       var data = {profiles: []};
       for (var i = 0; i < lines.length; i++) {
         var headerMatches = regex_header.exec(lines[i]);
-        if (!headerMatches) continue;
-
-        var url = lines[++i];
-        var bandwidth = headerMatches[1];
+        var url;
+        var bandwidth;
+        var segmentMatches = regex_segment.exec(lines[i]);
+        if (segmentMatches) {
+          /* 
+           * If there is a EXTINF tag that mean we are already on Profile part. We fake bandwitdh to create a profile with the same url.
+           */
+          headerMatches = [1, 100000];
+          url = self.url;
+          bandwidth = 100000;
+        } else {
+          if (!headerMatches) continue;
+          var url = lines[++i];
+          bandwidth = headerMatches[1];
+        }
 
         (function (i, url, bandwidth) {
           options = { id: -1
