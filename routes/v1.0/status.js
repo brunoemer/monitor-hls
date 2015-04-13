@@ -56,7 +56,7 @@ var Status = function () {
       return display(data, callback);
     }    
     if (channel.profiles.length < 1) {
-	
+  
       data.data = { channel_id: channel_id, status: "CRITICAL", message: "No profile present, live (" + channel.id + ") : " + channel.label};
       return display(data, callback);
     }
@@ -75,11 +75,12 @@ var Status = function () {
       for (var j = 0; j < profile.segments.length; j++) {
         var segment = profile.segments[i];
         if (segment.http_code != 200) {
-          data.data = { channel_id: channel_id, status: "CRITICAL", message: "Segment http_code 404, live (" + channel.id + ") : " + channel.label + ", profile_id :" + profile.id + ", segment url :" + segment.url.format()};
+          data.data = { channel_id: channel_id, status: "CRITICAL", message: "Segment http_code 404, live (" + channel.id + ") : " + channel.label + ", profile_id :" + profile.id + ", segment url :" + segment.url};
           return display(data, callback);
         }
         if (segment.size != null && segment.size < 1000) {
-          data.data = { channel_id: channel_id, status: "CRITICAL", message: "Segment size < 1000, live  (" + channel.id + ") : " + channel.label + ", profile_id :" + profile.id + ", segment url :" + segment.url.format()};
+          console.log(segment);
+          data.data = { channel_id: channel_id, status: "CRITICAL", message: "Segment size < 1000, live  (" + channel.id + ") : " + channel.label + ", profile_id :" + profile.id + ", segment url :" + segment.url};
           return display(data, callback);
         }
       }
