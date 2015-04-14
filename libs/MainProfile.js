@@ -53,7 +53,7 @@ var MainProfile = function (data) {
     };
 
     var updateMainProfile = function (data, callback) {
-      /**/self.debug._debug("lines", data.lines);/**/
+      /*/self.debug._debug("lines", data.lines);/**/
       var lines = data.lines;
       var data = {profiles: []};
       for (var i = 0; i < lines.length; i++) {

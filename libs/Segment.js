@@ -4,6 +4,7 @@ var https                 = require("https");
 var logger                = require("node-wrapper/logger");
 var url                   = require("url");
 var path                  = require("path");
+var request               = require("request");
 
 var Segment = function (data) {
   var self                = this;
@@ -31,6 +32,38 @@ var Segment = function (data) {
   };
 
   this.update = function (data, callback) {
+    self.requestHead(data, callback);
+  }
+
+  this.requestGet = function (data, callback) {
+    self.debug._debug("update segment", self.url.href);
+    var options = {url: self.url.format()};
+    if (self.config.headers) options.headers = self.config.headers;
+
+    return request(options, function (error, response, body) {
+      if (error) return callback(err);
+      
+      self.size = response.headers['content-length'];
+      self.debug._debug("end update segment", self.url.href);
+      return (callback) ? callback(null, "ok") : null;
+    });    
+  }
+
+  this.requestHead = function (data, callback) {
+    self.debug._debug("update segment", self.url.href);
+    var options = {url: self.url.format()};
+    if (self.config.headers) options.headers = self.config.headers;
+
+    return request.head(options, function (error, response, body) {
+      if (error) return callback(err);
+      
+      self.size = response.headers['content-length'];
+      self.debug._debug("end update segment", self.url.href);
+      return (callback) ? callback(null, "ok") : null;
+    });    
+  }
+
+  this.http = function (data, callback) {
     self.debug._debug("update segment", self.url.href);
     if ('user_agent' in self.config) self.url.headers = { 'User-Agent': self.config.user_agent };
     

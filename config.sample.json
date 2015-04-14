@@ -1,17 +1,25 @@
-{
- "channels" : [
-   {"label": "NASA"
-   , "url": "http://www.nasa.gov/multimedia/nasatv/NTV-Public-IPS.m3u8"
-   ,  "headers": []
-   , "inspection": "full"
-   , "payload": {"live_id": 10}
-   }
- , {"label": "Apple live show"
-   , "url": "http://qthttp.apple.com.edgesuite.net/1010qwoeiuryfg/sl.m3u8"
-   , "headers": []
-   , "inspection": "light"
-   , "payload": {"live_id": 11}
-   }
- ]
- , "user_agent": "Mozilla/5.0 (Linux; U; Android 4.4; en-us; SM-N900T Build/JSS15J) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Mobile Safari/534.30"
+{ "channels" : 
+  [
+    {"id": 10
+    ,"label": "NASA"
+    , "url": "http://www.nasa.gov/multimedia/nasatv/NTV-Public-IPS.m3u8"
+    ,  "headers": []
+    , "inspection": "light"
+    , "payload": {}
+    }
+  , { "id": 11
+    , "label": "VEVO"
+    , "url": "http://vevoplaylist-live.hls.adaptive.level3.net/vevo/ch1/06/prog_index.m3u8"
+    , "headers": []
+    , "inspection": "light"
+    , "payload": {}
+    }
+  ]
+,"headers": { "user-agent":"Mozilla/5.0 (Linux; U; Android 4.4; en-us; SM-N900T Build/JSS15J) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Mobile Safari/534.30"}
+,"methodOutput": { "default": 
+                   { "type": "syslog"
+                   ,"facility": "local0"
+                   ,"name":"monitor-hls"
+                   }
+                 }
 }

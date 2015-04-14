@@ -13,7 +13,6 @@ var routes          = require('./routes');
 var ChannelsManager = require("./libs/ChannelsManager.js");
 //var oauth = require("./libs/Oauth.js").getObject();
 
-logger.setMethodOutput({default: {type: 'syslog', facility: 'local0' }});
 var debug = logger.create("core");
 try {
   var config = JSON.parse(fs.readFileSync('./config.json', 'utf8'));
@@ -22,6 +21,9 @@ try {
   else debug._error(e);
   process.exit();
 }
+
+if (config.methodOutput)
+  logger.setMethodOutput(config.methodOutput);
 
 var channelsManager = new ChannelsManager();
 
