@@ -2,6 +2,7 @@ var async                      = require("async");
 var url                        = require("url");
 var logger                     = require("node-wrapper/logger");
 var request                    = require("request");
+var path                       = require("path");
 
 var Segment                    = require("./Segment.js")
 
@@ -34,23 +35,21 @@ var Profile = function (data) {
   const regexp_targetduration  = /^#EXT-X-TARGETDURATION:(.*)$/;
   const regexp_version         = /^#EXT-X-VERSION:(.*)$/;
   const regexp_allow_cache     = /^#EXT-X-ALLOW-CACHE:(.*)$/;
-  const regexp_segment         = /^#EXTINF:(.*)$/;
+  const regexp_extinf          = /^#EXTINF:(.*)$/;
+  const regexp_segment         = /^.*\.ts/;
 
-  /* Guess url */
-  if (!self.url.host) {
-    var MainBaseUrl = path.dirname(self.channel.url.format());
-    self.url = url.parse(url.resolve(MainBaseUrl, self.url.format()));
-  }
+  if (!self.url.host)
+    self.url = url.parse(url.resolve(self.channel.url, self.url.format()));
 
   this.init = function(callback){
     debug = logger.create("profile " + self.channel.label + "#" + self.id);
-    /*/debug._debug("init");/**/
+    debug._debug("init");
 
     if (callback) return callback();
   };
 
   this.start = function (data, callback) {
-    /*/debug._debug("start");/**/
+    debug._debug("start");
     return self.update(null, function (err, results) {
       if (err) return callback(err);
 
@@ -78,17 +77,21 @@ var Profile = function (data) {
       var data = {segments: []};
       for (var i = 0; i < lines.length; i++) {
         var matches;
-        if (matches = regexp_segment.exec(lines[i])) {
+        if (matches = regexp_extinf.exec(lines[i])) {
           if (!matches) continue;
           var length = parseFloat(matches[1]);
+
+          var url = "";
+          while (!(regexp_segment.exec(lines[i]))) i++;
 
           var options = { 
             id: -1
             , profile: self
             , length: length
-            , url: lines[++i] + "?nostat=1" 
+            , url: lines[i] + "?nostat=1" 
             , config: self.config
           };
+          i++;
           var segment = new Segment(options);
           data.segments.push(segment);
         } else if (matches = regexp_targetduration.exec(lines[i])) {
@@ -208,6 +211,7 @@ var Profile = function (data) {
       data.segments.push(self.segments[i].display());
     }
     data.id = self.id;
+    data.url = self.url.format();
     return data;
   }
 };

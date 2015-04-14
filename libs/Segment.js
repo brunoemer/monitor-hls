@@ -22,8 +22,7 @@ var Segment = function (data) {
 
   /* Guess url */
   if (!self.url.host) {
-    var profileBaseUrl = path.dirname(self.profile.url.format());
-    self.url = url.parse(url.resolve(profileBaseUrl, self.url.format()));
+    self.url = url.parse(url.resolve(self.profile.url.format(), self.url.format()));
   }
 
   this.init = function(callback){
@@ -43,6 +42,7 @@ var Segment = function (data) {
     return request(options, function (error, response, body) {
       if (error) return callback(err);
       
+      self.http_code = response.statusCode;
       self.size = response.headers['content-length'];
       self.debug._debug("end update segment", self.url.href);
       return (callback) ? callback(null, "ok") : null;
@@ -57,6 +57,7 @@ var Segment = function (data) {
     return request.head(options, function (error, response, body) {
       if (error) return callback(err);
       
+      self.http_code = response.statusCode;
       self.size = response.headers['content-length'];
       self.debug._debug("end update segment", self.url.href);
       return (callback) ? callback(null, "ok") : null;

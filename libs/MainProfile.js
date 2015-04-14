@@ -31,7 +31,7 @@ var MainProfile = function (data) {
   };
 
   this.start = function (data, callback) {
-    self.debug._debug("start");
+    self.debug._log("start");
     return self.update(null, function (err, results) {
       if (err) return callback(err);
 
@@ -53,7 +53,6 @@ var MainProfile = function (data) {
     };
 
     var updateMainProfile = function (data, callback) {
-      /*/self.debug._debug("lines", data.lines);/**/
       var lines = data.lines;
       var data = {profiles: []};
       for (var i = 0; i < lines.length; i++) {
@@ -192,10 +191,9 @@ var MainProfile = function (data) {
     }
     data.id = self.id;
     data.label = self.label;
+    data.url = self.url;
     return data;
   };
-
 };
-
 
 module.exports = MainProfile;

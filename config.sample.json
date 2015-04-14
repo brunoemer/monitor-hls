@@ -9,17 +9,23 @@
     }
   , { "id": 11
     , "label": "VEVO"
-    , "url": "http://vevoplaylist-live.hls.adaptive.level3.net/vevo/ch1/06/prog_index.m3u8"
+    , "url": "http://vevoplaylist-live.hls.adaptive.level3.net/vevo/ch1/appleman.m3u8"
     , "headers": []
     , "inspection": "light"
     , "payload": {}
     }
   ]
-,"headers": { "user-agent":"Mozilla/5.0 (Linux; U; Android 4.4; en-us; SM-N900T Build/JSS15J) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Mobile Safari/534.30"}
-,"methodOutput": { "default": 
-                   { "type": "syslog"
-                   ,"facility": "local0"
-                   ,"name":"monitor-hls"
-                   }
-                 }
+,"headers": 
+  { "user-agent": "Mozilla/5.0 (Linux; U; Android 4.4; en-us; SM-N900T Build/JSS15J) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Mobile Safari/534.30"}
+,"methodOutput": 
+  { "default": 
+    { "type": "syslog"
+    , "facility": "local0"
+    , "name": "monitor-hls"
+    ,  "color": "true"
+    , "name": "monitor-hls"
+    }
+  , "debug": 
+    {"type": "none"}
+  }
 }
