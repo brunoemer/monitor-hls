@@ -88,7 +88,7 @@ var Profile = function (data) {
             id: -1
             , profile: self
             , length: length
-            , url: lines[i] + "?nostat=1" 
+            , url: lines[i]
             , config: self.config
           };
           i++;

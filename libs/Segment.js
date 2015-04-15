@@ -5,6 +5,8 @@ var logger                = require("node-wrapper/logger");
 var url                   = require("url");
 var path                  = require("path");
 var request               = require("request");
+var merge                 = require("merge");
+var qs                    = require("qs");
 
 var Segment = function (data) {
   var self                = this;
@@ -24,6 +26,11 @@ var Segment = function (data) {
   if (!self.url.host) {
     self.url = url.parse(url.resolve(self.profile.url.format(), self.url.format()));
   }
+
+  /* add ?nostat=1 */
+  var query = qs.parse(self.url.query);
+  self.url.search = "?" + qs.stringify(merge(query, {"nostat": 1}));
+  self.url = url.parse(url.format(self.url));
 
   this.init = function(callback){
     self.debug = logger.create("segment " + self.profile.channel.label + "#" + self.profile.id + ':' + self.id);
@@ -50,9 +57,9 @@ var Segment = function (data) {
   }
 
   this.requestHead = function (data, callback) {
-    self.debug._debug("update segment", self.url.href);
-    var options = {url: self.url.format()};
+    var options = {url: url.format(self.url)};
     if (self.config.headers) options.headers = self.config.headers;
+    self.debug._debug("update segment", options.url);
 
     return request.head(options, function (error, response, body) {
       if (error) return callback(err);

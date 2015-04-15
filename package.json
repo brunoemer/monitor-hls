@@ -10,8 +10,10 @@
     "express": "^3.5.1",
     "express-method-override": "0.0.3",
     "jade": "*",
+    "merge": "^1.2.0",
     "moment": "^2.9.0",
     "node-wrapper": "^0.0.7",
+    "qs": "^2.4.1",
     "request": "^2.55.0",
     "util": "^0.10.3"
   }
