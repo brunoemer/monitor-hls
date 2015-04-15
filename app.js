@@ -13,6 +13,7 @@ var routes          = require('./routes');
 var ChannelsManager = require("./libs/ChannelsManager.js");
 //var oauth = require("./libs/Oauth.js").getObject();
 
+logger.setMethodOutput({default: {type: 'syslog', facility: 'local0' }});
 var debug = logger.create("core");
 try {
   var config = JSON.parse(fs.readFileSync('./config.json', 'utf8'));
