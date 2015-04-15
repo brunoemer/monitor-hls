@@ -188,6 +188,7 @@ var MainProfile = function (data) {
       data.profiles.push(self.profiles[i].display());
     }
     data.id = self.id;
+    data.label = self.label;
     return data;
   };
 

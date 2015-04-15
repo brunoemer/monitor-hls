@@ -52,33 +52,34 @@ var Status = function () {
     }
 
     if (!(channel.profiles instanceof Array)) {
-      data.data = { channel_id: channel_id, status: "CRITICAL", message: "profile is not an Array, live :" + channel.label};
+      data.data = { channel_id: channel_id, status: "CRITICAL", message: "Channel id cannot be found, id requested:" + channel_id};
       return display(data, callback);
     }    
     if (channel.profiles.length < 1) {
-      data.data = { channel_id: channel_id, status: "CRITICAL", message: "No profile present, live :" + channel.label};
+	
+      data.data = { channel_id: channel_id, status: "CRITICAL", message: "No profile present, live (" + channel.id + ") : " + channel.label};
       return display(data, callback);
     }
 
     for (var i = 0; i < channel.profiles.length; i++) {
       var profile = channel.profiles[i];
       if (!(profile.segments instanceof Array)) {
-        data.data = { channel_id: channel_id, status: "CRITICAL", message: "Segment is not an Array, live :" + channel.label + ", profile_id :" + profile.id};
+        data.data = { channel_id: channel_id, status: "CRITICAL", message: "Segment is not an Array, live (" + channel.id + ") : " + channel.label + ", profile_id :" + profile.id};
         return display(data, callback);
       }
       if (profile.segments.length < 1) {
-        data.data = { channel_id: channel_id, status: "CRITICAL", message: "No segment present, live :" + channel.label + ", profile_id :" + profile.id};
+        data.data = { channel_id: channel_id, status: "CRITICAL", message: "No segment present, live (" + channel.id + ") : " + channel.label + ", profile_id :" + profile.id};
         return display(data, callback);
       }
 
       for (var j = 0; j < profile.segments.length; j++) {
         var segment = profile.segments[i];
         if (segment.http_code != 200) {
-          data.data = { channel_id: channel_id, status: "CRITICAL", message: "Segment http_code 404, live :" + channel.label + ", profile_id :" + profile.id + ", segment url :" + segment.url};
+          data.data = { channel_id: channel_id, status: "CRITICAL", message: "Segment http_code 404, live (" + channel.id + ") : " + channel.label + ", profile_id :" + profile.id + ", segment url :" + segment.url.format()};
           return display(data, callback);
         }
         if (segment.size != null && segment.size < 1000) {
-          data.data = { channel_id: channel_id, status: "CRITICAL", message: "Segment size < 1000, live :" + channel.label + ", profile_id :" + profile.id + ", segment url :" + segment.url};
+          data.data = { channel_id: channel_id, status: "CRITICAL", message: "Segment size < 1000, live  (" + channel.id + ") : " + channel.label + ", profile_id :" + profile.id + ", segment url :" + segment.url.format()};
           return display(data, callback);
         }
       }
