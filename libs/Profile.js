@@ -31,7 +31,7 @@ var Profile = function (data) {
   var lines_saved              = [];
 
   /* Const */
-  const regexp_media_sequence  = /^#EXT-X-MEDIA_SEQUENCE:(.*)$/;
+  const regexp_media_sequence  = /^#EXT-X-MEDIA-SEQUENCE:(.*)$/;
   const regexp_targetduration  = /^#EXT-X-TARGETDURATION:(.*)$/;
   const regexp_version         = /^#EXT-X-VERSION:(.*)$/;
   const regexp_allow_cache     = /^#EXT-X-ALLOW-CACHE:(.*)$/;
@@ -212,6 +212,8 @@ var Profile = function (data) {
     }
     data.id = self.id;
     data.url = self.url.format();
+    data.ext_x_targetduration = ext_x_targetduration;
+    data.ext_x_media_sequence = ext_x_media_sequence;
     return data;
   }
 };

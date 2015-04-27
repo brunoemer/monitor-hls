@@ -22,8 +22,14 @@ try {
   process.exit();
 }
 
+// Set logger
 if (config.methodOutput)
   logger.setMethodOutput(config.methodOutput);
+
+// Manage uncaught error
+process.on('uncaughtException', function (err) {
+    debug._error(err);
+});   
 
 var channelsManager = new ChannelsManager();
 

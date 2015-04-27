@@ -98,7 +98,7 @@ var Segment = function (data) {
   };
 
   this.display = function () {
-    return {http_code: self.http_code, url: self.url.format(), size: self.size};
+    return {http_code: self.http_code, url: self.url.format(), size: self.size, length: self.length};
   };
 };
 
