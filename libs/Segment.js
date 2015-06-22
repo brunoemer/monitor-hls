@@ -29,7 +29,7 @@ var Segment = function (data) {
 
   /* add ?nostat=1 */
   var query = qs.parse(self.url.query);
-  self.url.search = "?" + qs.stringify(merge(query, {"nostat": 1}));
+  self.url.search = "?" + qs.stringify(merge(query, {"nostat": 1, "nolog": 1}));
   self.url = url.parse(url.format(self.url));
 
   this.init = function(callback){
