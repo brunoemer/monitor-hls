@@ -1,5 +1,6 @@
-var async = require("async");
-var object = undefined;
+var async                     = require("async");
+var moment                    = require("moment");
+var object                    = undefined;
 
 var Status = function () {
   var debug;
@@ -61,8 +62,29 @@ var Status = function () {
       return display(data, callback);
     }
 
+    var now = moment();
     for (var i = 0; i < channel.profiles.length; i++) {
       var profile = channel.profiles[i];
+
+      /* Check if segments change since 1 minute */
+      if (!profile.last_change) {
+        data.data = { channel_id: channel_id
+                      , status: "CRITICAL"
+                      , message: "Last change is not set, check Profile:last_change, live  (" + channel.id + ") : " + channel.label + ", profile_id :" + profile.id
+                    };
+        return display(data, callback);
+
+      }
+      var last_change = moment(profile.last_change);
+      last_change.add(2, 'minutes');
+      if (last_change < now) {
+        data.data = { channel_id: channel_id
+                      , status: "CRITICAL"
+                      , message: "No change since 2 minute, live  (" + channel.id + ") : " + channel.label + ", profile_id :" + profile.id
+                    };
+        return display(data, callback);
+      }
+
       if (!(profile.segments instanceof Array)) {
         data.data = { channel_id: channel_id, status: "CRITICAL", message: "Segment is not an Array, live (" + channel.id + ") : " + channel.label + ", profile_id :" + profile.id};
         return display(data, callback);
@@ -79,7 +101,6 @@ var Status = function () {
           return display(data, callback);
         }
         if (segment.size != null && segment.size < 1000) {
-          console.log(segment);
           data.data = { channel_id: channel_id, status: "CRITICAL", message: "Segment size < 1000, live  (" + channel.id + ") : " + channel.label + ", profile_id :" + profile.id + ", segment url :" + segment.url};
           return display(data, callback);
         }

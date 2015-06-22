@@ -3,11 +3,12 @@ var url                        = require("url");
 var logger                     = require("node-wrapper/logger");
 var request                    = require("request");
 var path                       = require("path");
+var moment                     = require("moment");
 
 var Segment                    = require("./Segment.js")
 
 var Profile = function (data) {
-  var self                = this;
+  var self                     = this;
 
   this.id                      = data.id;
   this.url                     = url.parse(data.url);
@@ -18,6 +19,7 @@ var Profile = function (data) {
   this.profiles                = data.profiles;
   this.bandwitdh               = data.bandwidth;
   this.segments                = [];
+  this.last_change             = moment();
 
   var ext_x_version            = null;
   var ext_x_allow_cache        = null;
@@ -74,7 +76,7 @@ var Profile = function (data) {
 
     var updateProfile = function (data, callback) {
       var lines = data.lines;
-      var data = {segments: []};
+      var data = {segments: [], now: moment()};
       for (var i = 0; i < lines.length; i++) {
         var matches;
         if (matches = regexp_extinf.exec(lines[i])) {
@@ -120,10 +122,11 @@ var Profile = function (data) {
           }
         }
         if (!found) {
-          /*/debug._debug("remove segment", segments[i].display().url);/**/
+          /*/debug._debug("remove segment", self.segments[i].display().url, data.now);/**/
           var segment = self.segments.splice(i, 1);
           segment[0].delete();
           segment = null;
+          self.last_change = data.now;
         }
       }
 
@@ -140,11 +143,12 @@ var Profile = function (data) {
           }
         }
         if (!exist) {
-/*/          debug._debug("add segment", data.segments[i].display().url);/**/
+          /*/debug._debug("add segment", data.segments[i].display().url, data.now);/**/
           data.segments[i].id = last_segment_id++;
           data.segments[i].init();
           self.segments.push(data.segments[i]);
           data.segments[i].update();
+          self.last_change = data.now;
         }
       }
 
@@ -214,6 +218,7 @@ var Profile = function (data) {
     data.url = self.url.format();
     data.ext_x_targetduration = ext_x_targetduration;
     data.ext_x_media_sequence = ext_x_media_sequence;
+    data.last_change = self.last_change;
     return data;
   }
 };
