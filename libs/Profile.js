@@ -4,6 +4,8 @@ var logger                     = require("node-wrapper/logger");
 var request                    = require("request");
 var path                       = require("path");
 var moment                     = require("moment");
+var qs                         = require("qs");
+var merge                      = require("merge");
 
 var Segment                    = require("./Segment.js")
 
@@ -43,6 +45,11 @@ var Profile = function (data) {
   if (!self.url.host)
     self.url = url.parse(url.resolve(self.channel.url, self.url.format()));
 
+  /* add ?nostat=1 */
+  var query = qs.parse(self.url.query);
+  self.url.search = "?" + qs.stringify(merge(query, {"nostat": 1, "nolog": 1}));
+  self.url = url.parse(url.format(self.url));
+
   this.init = function(callback){
     debug = logger.create("profile " + self.channel.label + "#" + self.id);
     debug._debug("init");
@@ -61,7 +68,8 @@ var Profile = function (data) {
 
   this.update = function (data, callback) {
     var fetchM3u8 = function (callback) {
-      var options = {url: self.url.format()};
+      var url = self.url.format() + "?" + qs.stringify(merge(query, {"nostat": 1, "nolog": 1}));
+      var options = {url: url};
       if (self.config.headers) options.headers = self.config.headers;
 
       return request(options, function (error, response, body) {

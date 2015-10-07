@@ -3,6 +3,9 @@ var request         = require("request");
 var logger          = require("node-wrapper/logger");
 var util            = require("util");
 var url_module      = require("url");
+var qs              = require("qs");
+var url             = require("url");
+var merge           = require("merge");
 
 var Profile         = require("./Profile.js")
 
@@ -10,7 +13,7 @@ var MainProfile = function (data) {
   var self                = this;
 
   this.id                  = data.id;
-  this.url                 = data.url;
+  this.url                 = url.parse(data.url);
   this.label               = data.label;
   this.debug               = null;
   this.config              = data.config;
@@ -23,6 +26,11 @@ var MainProfile = function (data) {
   /* Const */
   const regex_header       = /^#EXT-X-STREAM-INF\s*:\s*PROGRAM-ID\s*=\s*[1-9]+\s*,\s*BANDWIDTH\s*=\s*(.*),*.*$/;
   const regex_segment     = /^#EXTINF:(.*)$/;
+
+  /* add ?nostat=1 */
+  var query = qs.parse(self.url.query);
+  self.url.search = "?" + qs.stringify(merge(query, {"nostat": 1, "nolog": 1}));
+  self.url = url.parse(url.format(self.url));
 
   this.init = function(callback){
     self.debug     = logger.create("live " + self.label);
@@ -41,7 +49,7 @@ var MainProfile = function (data) {
 
   this.update = function (data, callback) {
     var fetchM3u8 = function (callback) {
-      var options = {url: self.url};
+      var options = {url: self.url.format()};
       if (self.config.headers) options.headers = self.config.headers;
 
       return request(options, function (error, response, body) {
@@ -65,7 +73,7 @@ var MainProfile = function (data) {
            * If there is a EXTINF tag that mean we are already on Profile part. We fake bandwitdh to create a profile with the same url.
            */
           headerMatches = [1, 100000];
-          url = self.url;
+          url = self.url.format();
           bandwidth = 100000;
         } else {
           if (!headerMatches) continue;
@@ -192,7 +200,7 @@ var MainProfile = function (data) {
     }
     data.id = self.id;
     data.label = self.label;
-    data.url = self.url;
+    data.url = self.url.format();
     return data;
   };
 };
