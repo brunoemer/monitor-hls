@@ -14,10 +14,12 @@ var ChannelsManager = require("./libs/ChannelsManager.js");
 //var oauth = require("./libs/Oauth.js").getObject();
 
 var debug = logger.create("core");
+var configFile = process.argv[3] || './config.json';
 try {
-  var config = JSON.parse(fs.readFileSync('./config.json', 'utf8'));
+  debug._debug("Read", configFile);
+  var config = JSON.parse(fs.readFileSync(configFile, 'utf8'));
 } catch (e) {
-  if ('code' in e && e.code == 'ENOENT') debug._error('./config.json file is missing');
+  if ('code' in e && e.code == 'ENOENT') debug._error('./' + configFile + ' file is missing');
   else debug._error(e);
   process.exit();
 }
@@ -45,10 +47,11 @@ var objects =
     }
   };
 
+/*/
 setInterval(function () {
     debug._debug("getActiveHandles", process._getActiveHandles().length, "getActiveRequests", process._getActiveRequests().length)
 }, 1000);
-
+/**/
 var app = express();
 
 // all environments

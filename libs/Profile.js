@@ -38,7 +38,7 @@ var Profile = function (data) {
   const regexp_version         = /^#EXT-X-VERSION:(.*)$/;
   const regexp_allow_cache     = /^#EXT-X-ALLOW-CACHE:(.*)$/;
   const regexp_extinf          = /^#EXTINF:(.*)$/;
-  const regexp_segment         = /^.*\.ts/;
+  const regexp_segment         = /.*\.ts/;
 
   if (!self.url.host)
     self.url = url.parse(url.resolve(self.channel.url, self.url.format()));
@@ -82,7 +82,6 @@ var Profile = function (data) {
         if (matches = regexp_extinf.exec(lines[i])) {
           if (!matches) continue;
           var length = parseFloat(matches[1]);
-
           var url = "";
           while (!(regexp_segment.exec(lines[i]))) i++;
 
@@ -93,7 +92,6 @@ var Profile = function (data) {
             , url: lines[i]
             , config: self.config
           };
-          i++;
           var segment = new Segment(options);
           data.segments.push(segment);
         } else if (matches = regexp_targetduration.exec(lines[i])) {
