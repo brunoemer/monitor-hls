@@ -140,7 +140,6 @@ var MainProfile = function (data) {
     var startProfiles = function (callback) {
       async.map(self.profiles, function (profile, callback) {
         /* warning, we should start only new profiles */
-	if (profile.id > 0) return callback();
         profile.start(null, function (err, results) {
           if (err) return callback(err);
           return callback();
