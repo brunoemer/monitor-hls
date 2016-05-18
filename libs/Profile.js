@@ -51,14 +51,14 @@ var Profile = function (data) {
   self.url = url.parse(url.format(self.url));
 
   this.init = function(callback){
-    debug = logger.create("profile " + self.channel.label + "#" + self.id);
-    debug._debug("init");
+    self.debug = logger.create("profile " + self.channel.label + "#" + self.id);
+    self.debug._debug("init");
 
     if (callback) return callback();
   };
 
   this.start = function (data, callback) {
-    debug._debug("start");
+    self.debug._debug("start");
     return self.update(null, function (err, results) {
       if (err) return callback(err);
 
@@ -128,7 +128,7 @@ var Profile = function (data) {
           }
         }
         if (!found) {
-          /*/debug._debug("remove segment", self.segments[i].display().url, data.now);/**/
+          /*/self.debug._debug("remove segment", self.segments[i].display().url, data.now);/**/
           var segment = self.segments.splice(i, 1);
           segment[0].delete();
           segment = null;
@@ -149,7 +149,7 @@ var Profile = function (data) {
           }
         }
         if (!exist) {
-          /*/debug._debug("add segment", data.segments[i].display().url, data.now);/**/
+          /*/self.debug._debug("add segment", data.segments[i].display().url, data.now);/**/
           data.segments[i].id = last_segment_id++;
           data.segments[i].init();
           self.segments.push(data.segments[i]);
@@ -178,9 +178,10 @@ var Profile = function (data) {
       if (ext_x_targetduration > 2) time = ext_x_targetduration;
       
       timeout = setTimeout(function () {
-        self.update(function (err, results) {
-          if (err) return debug._warning(err);
-//          return debug._log("update");
+	self.debug._debug("update");
+        self.update(null, function (err, results) {
+          if (err) return self.debug._warning(err);
+          self.debug._debug("End update");
         });
       }, time * 1000);
       return callback();
@@ -189,14 +190,15 @@ var Profile = function (data) {
     var jobs = [fetchM3u8, updateProfile, removeSegments, addSegments, updateSegments, createTimeout];
     var jobs = [fetchM3u8, updateProfile, removeSegments, addSegments, createTimeout];
     async.waterfall(jobs, function (err, results) {
-      if (err) return (callback) ? callback(null, null) : null;
+      // If there is an error, when want the process continue so no callback(err)
+      if (err) self.debug._warning(err);
       
       if (callback) return callback(null, null);
     });
   };
 
   this.stop = function (data, callback) {
-    debug._debug("stop");
+    self.debug._debug("stop");
     if (timeout) clearTimeout(timeout);
     
     if (callback) return callback(null, null);

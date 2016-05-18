@@ -90,7 +90,7 @@ var Segment = function (data) {
         return (callback) ? callback(null, "ok") : null;
       });
     }).on("error", function (err) {
-        return (callback) ? callback(null, "ok") : null;
+        return (callback) ? callback(err, null) : null;
     });
   };
 
