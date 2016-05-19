@@ -43,16 +43,16 @@ var Segment = function (data) {
   }
 
   this.requestGet = function (data, callback) {
-    /*/self.debug._debug("update segment", self.url.href);/**/
+    /**/self.debug._debug("update segment", self.url.href);/**/
     var options = {url: self.url.format()};
     if (self.config.headers) options.headers = self.config.headers;
 
     return request(options, function (error, response, body) {
-      if (error) return callback(err);
+      if (error) return callback(error);
       
       self.http_code = response.statusCode;
       self.size = response.headers['content-length'];
-      /*/self.debug._debug("end update segment", self.url.href);/**/
+      /**/self.debug._debug("end update segment", self.url.href);/**/
       return (callback) ? callback(null, "ok") : null;
     });    
   }
@@ -60,20 +60,20 @@ var Segment = function (data) {
   this.requestHead = function (data, callback) {
     var options = {url: url.format(self.url)};
     if (self.config.headers) options.headers = self.config.headers;
-    /*/self.debug._debug("update segment", options.url);/**/
+    /**/self.debug._debug("update segment", options.url);/**/
 
     return request.head(options, function (error, response, body) {
-      if (error) return callback(err);
+      if (error) return callback(error);
       
       self.http_code = response.statusCode;
       self.size = response.headers['content-length'];
-      /*/self.debug._debug("end update segment", self.url.href);/**/
+      /**/self.debug._debug("end update segment", self.url.href);/**/
       return (callback) ? callback(null, "ok") : null;
     });    
   }
 
   this.http = function (data, callback) {
-    /*/self.debug._debug("update segment", self.url.href);/**/
+    /**/self.debug._debug("update segment", self.url.href);/**/
     if ('user_agent' in self.config) self.url.headers = { 'User-Agent': self.config.user_agent };
     
     var bytes = 0;
@@ -86,7 +86,7 @@ var Segment = function (data) {
       });
       response.on('end', function () {
         self.size = bytes;
-        /*/self.debug._debug("end update segment", self.url.href);/**/
+        /**/self.debug._debug("end update segment", self.url.href);/**/
         return (callback) ? callback(null, "ok") : null;
       });
     }).on("error", function (err) {

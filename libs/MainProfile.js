@@ -53,7 +53,7 @@ var MainProfile = function (data) {
       if (self.config.headers) options.headers = self.config.headers;
 
       return request(options, function (error, response, body) {
-        if (error) return callback(err);
+        if (error) return callback(error);
 
         var lines = body.split(/\r?\n/);         
         return callback(null, {lines: lines});
