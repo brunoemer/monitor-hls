@@ -24,7 +24,7 @@ var MainProfile = function (data) {
   var timeout              = null;
 
   /* Const */
-  const regex_header       = /^#EXT-X-STREAM-INF\s*:\s*PROGRAM-ID\s*=\s*[1-9]+\s*,\s*BANDWIDTH\s*=\s*(.*),*.*$/;
+  const regex_header       = /^#EXT-X-STREAM-INF\s*:\s*(PROGRAM-ID\s*=\s*[1-9]+\s*,)?\s*BANDWIDTH\s*=\s*([^,]*),*.*$/;
   const regex_segment     = /^#EXTINF:(.*)$/;
 
   /* add ?nostat=1 */
@@ -78,7 +78,7 @@ var MainProfile = function (data) {
         } else {
           if (!headerMatches) continue;
           var url = lines[++i];
-          bandwidth = headerMatches[1];
+          bandwidth = headerMatches[2];
         }
 
         (function (i, url, bandwidth) {
